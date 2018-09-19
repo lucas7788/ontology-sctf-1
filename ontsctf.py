@@ -378,7 +378,7 @@ def convert_params(func, func_map: {}):
             try:
                 addr = bytearray()
                 if func_map["param_list"][i].startswith("A"):
-                    addr = Address.b58decode(func_map["param_list"][i], False).to_array()
+                    addr = Address.b58decode(func_map["param_list"][i]).to_array()
                 else:
                     addr = Address(bytearray.fromhex(func_map["param_list"][i])).to_array()
                 params.append(addr)
@@ -400,7 +400,7 @@ def convert_params(func, func_map: {}):
                                 temp.append(str(p).split(":")[1])
                             elif str(p).split(":")[0] == "ByteArray":
                                 try:
-                                    temp.append(Address.b58decode(str(p).split(":")[1], False).to_array())
+                                    temp.append(Address.b58decode(str(p).split(":")[1]).to_array())
                                 except Exception as e:
                                     temp.append(str(p).split(":")[1].encode())
                         elif type(p) is bool:
