@@ -12,6 +12,16 @@
       "function_name": "deploy",
       "function_param": {
       },
+      "signers":
+        {
+        "m": 1,
+        "signer":
+          {
+            "walletpath": "./contract/oep4TokenTemplate/invoke_wallet.json",
+            "address": "ASUwFccvYFrrWR6vsZhhNszLFNvCLA5qS6",
+            "password": "xinhao"
+          }
+      },
       "pre_exec": false
     },
     "transferMulti":{
