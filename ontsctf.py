@@ -59,7 +59,8 @@ def compile_cmd(m: [], arg: str):
         return
     elif "cs" in arg:
         payload["type"] = "CSharp"
-        url = "http://42.159.94.234:8080/api/v1.0/compile"
+        # url = "http://42.159.94.234:8080/api/v1.0/compile"
+        url = "https://smartxcompiler.ont.io/api/v1.0/csharp/compile"
         with open(arg, "r") as f:
             contract = f.read()
             if str == "":
@@ -67,13 +68,17 @@ def compile_cmd(m: [], arg: str):
             payload["code"] = contract
     elif "py" in arg:
         payload["type"] = "Python"
-        url = "http://42.159.92.140:8080/api/v1.0/compile"
+        # url = "http://42.159.92.140:8080/api/v1.0/compile"
+        url = "https://smartxcompiler.ont.io/api/beta/python/compile"
     header = {'Content-type': 'application/json'}
     timeout = 10
     path = os.path.dirname(arg)
     file_name = os.path.basename(arg).split(".")
     print("compiling, please wait a monment...")
-    res = requests.post(url, json=payload, headers=header, timeout=timeout)
+    session = requests.session()
+    res = session.post(url, json=payload, headers=header, timeout=timeout, verify=False)
+    print("url:", url)
+    # res = requests.post(url, json=payload, headers=header, timeout=timeout)
     result = json.loads(res.content.decode())
     if result["errcode"] == 0:
         with open(path+"/"+file_name[0]+".avm", "w", encoding='utf-8') as f:
