@@ -302,6 +302,7 @@ def deploy(sdk, m):
     if code != "unknow contract":
         print("contract have been deployed")
         print("contract_address:", m["contract_address"])
+        save_file(m, "contract have been deployed")
         return
     need_storage = False
     if m["need_storage"] is 'true':
