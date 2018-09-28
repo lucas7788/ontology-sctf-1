@@ -16,42 +16,64 @@ from ontology.smart_contract.neo_vm import NeoVm
 import requests
 import re
 
+CSHARP_COMPILE_URL = "https://smartxcompiler.ont.io/api/v1.0/csharp/compile"
+PYTHON_COMPILE_URL = "https://smartxcompiler.ont.io/api/beta/python/compile"
+
 
 def main(argv):
    try:
-      opts, args = getopt.getopt(argv, "hm:i:c:f:", ["migrate=", "invoke=", "compile", "function"])
+      opts, args = getopt.getopt(argv, "hd:i:c:f:l:", ["deploy=", "invoke=", "compile", "function", "list"])
    except getopt.GetoptError:
-      print('ontsctf.py [-m|--migrate] [-i|--invoke] [-c|--compile]')
+      print('ontsctf.py [-d|--deploy] [-i|--invoke] [-c|--compile] [-l|list]')
       sys.exit(2)
    m = {}
    for opt, arg in opts:
       if opt == '-h':
-         print('test.py [-m|--migrate] [-i|--invoke invoke.json -f function] [-c swap.cs] ')
+         print('test.py [-d|--deploy] [-i|--invoke invoke.json -f function] [-c swap.cs] [-l]')
          sys.exit()
-      elif opt in ("-m", "--migrate"):
-          m["func"] = "migrate"
+      elif opt in ("-d", "--deploy"):
+          m["func"] = "deploy"
           deploy_cmd(m, str(arg))
       elif opt in ("-i", "--invoke"):
          m["func"] = "invoke"
          invoke_cmd(m, str(arg))
       elif opt in ("-c", "--compile"):
-          compile_cmd(m, str(arg))
+          compile_cmd(str(arg))
+          return
+      elif opt in ("-l", "--list"):
+          list_cmd(str(arg))
           return
       elif opt in ("-f", "--function"):
           funcs = str(arg).split(",")
-          funcs2 = funcs.copy()
-          for func in dict(m["function"]).values():
-              if func["function_name"] in funcs2:
-                  funcs2.remove(func["function_name"])
-          if len(funcs2) == 0:
-              execute(m, funcs)
-          else:
-              print("there is not the function:", funcs2)
-          sys.exit()
+          for func in funcs:
+              if func not in dict(m["function"]).values():
+                  print("there is not the function:", func + " in the invoke.json")
+                  return
+          execute(m, funcs)
+          # funcs2 = funcs.copy()
+          # for func in dict(m["function"]).values():
+          #     if func["function_name"] in funcs2:
+          #         funcs2.remove(func["function_name"])
+          # if len(funcs2) == 0:
+          #     execute(m, funcs)
+          # else:
+          #     print("there is not the function:", funcs2)
+          # sys.exit()
    execute(m)
 
 
-def compile_cmd(m: [], arg: str):
+# arg is the path of abi file
+def list_cmd(arg: str):
+    if not os.path.exists(arg):
+        print("there is not the abi file")
+        return
+    with open(arg, "r") as f:
+        abi = json.loads(f.read())
+        for function in abi["functions"]:
+            print("function name: ", function["name"])
+
+
+def compile_cmd(arg: str):
     url = ""
     payload = {"type": "", "code": ""}
     if arg == "":
@@ -59,8 +81,7 @@ def compile_cmd(m: [], arg: str):
         return
     elif "cs" in arg:
         payload["type"] = "CSharp"
-        # url = "http://42.159.94.234:8080/api/v1.0/compile"
-        url = "https://smartxcompiler.ont.io/api/v1.0/csharp/compile"
+        url = CSHARP_COMPILE_URL
         with open(arg, "r") as f:
             contract = f.read()
             if str == "":
@@ -68,8 +89,7 @@ def compile_cmd(m: [], arg: str):
             payload["code"] = contract
     elif "py" in arg:
         payload["type"] = "Python"
-        # url = "http://42.159.92.140:8080/api/v1.0/compile"
-        url = "https://smartxcompiler.ont.io/api/beta/python/compile"
+        url = PYTHON_COMPILE_URL
     header = {'Content-type': 'application/json'}
     timeout = 10
     path = os.path.dirname(arg)
@@ -151,7 +171,7 @@ def invoke_cmd(m: [], arg: str):
 def execute(m:[], function_name=None):
     sdk = OntologySdk()
     sdk.set_rpc(m["rpc_address"])
-    if m["func"] is "migrate":
+    if m["func"] is "deploy":
         deploy(sdk, m)
     elif m["func"] is "invoke":
         invoke(sdk, m, function_name)
