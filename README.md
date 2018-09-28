@@ -4,6 +4,13 @@
 
 This is SCTF(Ontology Smart Contract Testing Framework), supporting compiling contract, deploying contract and invoking methods within smart contract. You can invoke and test the methods either one by one or once for all. For the details, please refer to the content below.
 
+## requirement
+
+pip version >= 3.7
+
+```
+pip install ontology-python-sdk
+```
 
 ## Usage
 
