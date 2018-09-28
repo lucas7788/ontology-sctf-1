@@ -176,7 +176,7 @@ def execute(m:[], function_name=None):
     elif m["func"] is "invoke":
         invoke(sdk, m, function_name)
     else:
-        print("only support migrate and invoke")
+        print("only support compile deploy invoke and list")
 
 
 def invoke(sdk, m, function_name=None):
@@ -473,7 +473,7 @@ def save_file(m: [], res: str, func_l = None):
                 ishasheader = True
                 line = list(lines)[len(list(lines)) - 1]
                 no = int(line[0], 10) + 1
-    if m["func"] == "migrate":
+    if m["func"] == "deploy":
         with open(m["save_file"], "a", newline="") as csvfile:
             writer = csv.writer(csvfile)
             if not ishasheader:
