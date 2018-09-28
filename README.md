@@ -61,7 +61,12 @@ Configuration of deploy.json file：
   "save_file":"./contract/Token/deploy.csv"     //Path of file for saving migrating test results
 }
 ```
+#### query all function in the abi
 
+```
+python ontsctf.py -l abi_path
+```
+it will list all the function in the abi.json
 
 #### The way to invoke methods in contract
 Once your invoke.json file has been correctly configured, you can test the methods in your contract, whether one by one or once for all.
